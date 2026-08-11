@@ -24,8 +24,9 @@ ext {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
 	implementation 'org.springframework.ai:spring-ai-starter-model-ollama'
+	implementation 'org.springframework.ai:spring-ai-vector-store-advisor'
+	implementation 'org.springframework.ai:spring-ai-starter-vector-store-pgvector'
 	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
-	//implementation 'org.springframework.ai:spring-ai-advisors-vector-store'
 	runtimeOnly 'org.postgresql:postgresql'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
