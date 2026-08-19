@@ -4,7 +4,9 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 
 import java.util.List;
 
@@ -12,11 +14,16 @@ import java.util.List;
 @RequestMapping("/chat")
 public class ChatController {
 
-    private final ChatClient chatClient;
+    private final ChatClient ollamaChatClient;
+    private final ChatClient claudeChatClient;
     private final VectorStore vectorStore;
 
-    public ChatController(ChatClient chatClient, VectorStore vectorStore) {
-        this.chatClient = chatClient;
+    public ChatController(
+            @Qualifier("ollamaChatClient") ChatClient ollamaChatClient,
+            @Qualifier("claudeChatClient") ChatClient claudeChatClient,
+            VectorStore vectorStore) {
+        this.ollamaChatClient = ollamaChatClient;
+        this.claudeChatClient = claudeChatClient;
         this.vectorStore = vectorStore;
     }
 
@@ -40,16 +47,47 @@ public class ChatController {
     }*/
 
     @PostMapping
-    public String chat(
+    public Flux<String> chat(
+            @RequestParam String conversationId,
+            @RequestParam(defaultValue = "ollama") String provider,
+            @RequestBody String message) {
+
+        ChatClient client = provider.equalsIgnoreCase("claude") ? claudeChatClient : ollamaChatClient;
+
+
+        if (message == null || message.isBlank()) {
+            return Flux.just("Please enter a question.");
+        }
+        if (message.length() > 2000) {
+            return Flux.just("Your message is too long, please shorten it.");
+        }
+
+        return client.prompt()
+                .user(message)
+                .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, conversationId))
+                .stream()
+                //.call()
+                .content();
+    }
+
+   /* @PostMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<String> chatStream(
             @RequestParam String conversationId,
             @RequestBody String message) {
+
+        if (message == null || message.isBlank()) {
+            return Flux.just("Please enter a question.");
+        }
+        if (message.length() > 2000) {
+            return Flux.just("Your message is too long, please shorten it.");
+        }
 
         return chatClient.prompt()
                 .user(message)
                 .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, conversationId))
-                .call()
+                .stream()
                 .content();
-    }
+    }*/
 
     @GetMapping("/debug/search")
     public List<Document> debugSearch(@RequestParam String query) {
