@@ -1,5 +1,6 @@
 package learn.ai.support_assistant.config;
 
+import learn.ai.support_assistant.service.HelpdeskTools;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
@@ -30,7 +31,7 @@ public class AiConfig {
                 .build();
     }*/
 
-    @Bean
+    /*@Bean
     public ChatClient chatClient(OllamaChatModel chatModel, ChatMemory chatMemory, VectorStore vectorStore) {
         return ChatClient.builder(chatModel)
                 .defaultSystem("""
@@ -43,6 +44,29 @@ public class AiConfig {
                         MessageChatMemoryAdvisor.builder(chatMemory).build(),
                         QuestionAnswerAdvisor.builder(vectorStore).build()
                 )
+                .build();
+    }*/
+
+    @Bean
+    public ChatClient chatClient(
+            OllamaChatModel chatModel,
+            ChatMemory chatMemory,
+            VectorStore vectorStore,
+            HelpdeskTools helpdeskTools) {
+
+        return ChatClient.builder(chatModel)
+                .defaultSystem("""
+                        You are a helpful support assistant for an internal helpdesk app.
+                        Answer using the provided context when it's relevant.
+                        If the answer isn't in the context, say you don't have that information
+                        rather than guessing.
+                        Use the available tools when the user asks about ticket status or wants to create a ticket.
+                        """)
+                .defaultAdvisors(
+                        MessageChatMemoryAdvisor.builder(chatMemory).build(),
+                        QuestionAnswerAdvisor.builder(vectorStore).build()
+                )
+                .defaultTools(helpdeskTools)
                 .build();
     }
 }

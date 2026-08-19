@@ -2,16 +2,22 @@ package learn.ai.support_assistant.controller;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.memory.ChatMemory;
+import org.springframework.ai.document.Document;
+import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/chat")
 public class ChatController {
 
     private final ChatClient chatClient;
+    private final VectorStore vectorStore;
 
-    public ChatController(ChatClient chatClient) {
+    public ChatController(ChatClient chatClient, VectorStore vectorStore) {
         this.chatClient = chatClient;
+        this.vectorStore = vectorStore;
     }
 
 
@@ -43,5 +49,10 @@ public class ChatController {
                 .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, conversationId))
                 .call()
                 .content();
+    }
+
+    @GetMapping("/debug/search")
+    public List<Document> debugSearch(@RequestParam String query) {
+        return vectorStore.similaritySearch(query);
     }
 }
