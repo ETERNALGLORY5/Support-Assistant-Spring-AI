@@ -2,6 +2,7 @@ package learn.ai.support_assistant.config;
 
 import org.springframework.ai.document.Document;
 import org.springframework.ai.reader.TextReader;
+import org.springframework.ai.transformer.splitter.TokenTextSplitter;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.io.Resource;
@@ -30,6 +31,12 @@ public class KnowledgeBaseLoader implements CommandLineRunner {
 
         var resolver = new PathMatchingResourcePatternResolver();
         Resource[] resources = resolver.getResources("classpath:kb/*.txt");
+
+        TokenTextSplitter splitter = TokenTextSplitter.builder()
+                .withChunkSize(100)       // target tokens per chunk
+                .withMinChunkSizeChars(50)
+                .withMaxNumChunks(50)
+                .build();
 
         for (Resource resource : resources) {
             TextReader textReader = new TextReader(resource);
