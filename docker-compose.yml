@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: support-assistant-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: support-assistant
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - support-assistant-pgdata:/var/lib/postgresql/data
+
+volumes:
+  support-assistant-pgdata:
