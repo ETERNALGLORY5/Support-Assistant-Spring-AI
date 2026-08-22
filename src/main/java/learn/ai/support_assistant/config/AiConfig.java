@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class AiConfig {
 
-    private static final String SYSTEM_PROMPT = """
+/*    private static final String SYSTEM_PROMPT = """
             You are a helpful support assistant for an internal helpdesk app.
             Only answer questions related to account issues, password resets,
             refunds, shipping, and support tickets.
@@ -27,7 +27,21 @@ public class AiConfig {
             If the answer isn't in the context, say you don't have that information
             rather than guessing.
             Use the available tools when the user asks about ticket status or wants to create a ticket.
-            """;
+            """;*/
+
+    private static final String SYSTEM_PROMPT = """
+        You are a helpful support assistant for an internal helpdesk app.
+        Only answer questions related to account issues, password resets,
+        refunds, shipping, and support tickets.
+        If asked something outside this scope, politely say you can only help
+        with helpdesk-related questions.
+        Answer using the provided context when it's relevant.
+        If the answer isn't in the context, say you don't have that information
+        rather than guessing.
+        You can look up ticket status, create new tickets, update ticket status,
+        and list existing tickets using the available tools. Use them whenever
+        the user's request requires real ticket data rather than guessing.
+        """;
 
    /* @Bean
     public ChatMemory chatMemory() {

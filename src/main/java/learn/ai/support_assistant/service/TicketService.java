@@ -3,6 +3,7 @@ package learn.ai.support_assistant.service;
 import learn.ai.support_assistant.model.Ticket;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -29,5 +30,17 @@ public class TicketService {
         Ticket ticket = new Ticket(id, "Open", description);
         tickets.put(id, ticket);
         return ticket;
+    }
+
+    public Ticket updateStatus(String ticketId, String newStatus) {
+        Ticket existing = tickets.get(ticketId);
+        if (existing == null) return null;
+        Ticket updated = new Ticket(existing.id(), newStatus, existing.description());
+        tickets.put(ticketId, updated);
+        return updated;
+    }
+
+    public List<Ticket> listAll() {
+        return List.copyOf(tickets.values());
     }
 }
