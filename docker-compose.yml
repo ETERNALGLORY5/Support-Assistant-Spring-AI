@@ -16,6 +16,18 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+  app:
+    build: .
+    ports:
+      - "9090:9090"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/support-assistant
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      SPRING_AI_OLLAMA_BASE_URL: http://host.docker.internal:11434
+    depends_on:
+      - postgres
 
 volumes:
   support-assistant-pgdata:
